@@ -9,122 +9,99 @@
     <style>
         :root {
             --bg-color: #050810;
-            --card-glass: rgba(255, 255, 255, 0.03);
-            --border-glass: rgba(255, 255, 255, 0.1);
+            --header-text: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-sub: #94a3b8;
             --primary-glow: #38bdf8;
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f8fafc;
+            --header-text: #0f172a;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --primary-glow: #0284c7;
         }
 
         body {
             font-family: 'Tajawal', sans-serif;
-            background: radial-gradient(circle at center, #111827 0%, #050810 100%);
-            color: #fff;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
+            background: var(--bg-color);
+            color: var(--text-main);
+            margin: 0; padding: 0; min-height: 100vh;
+            transition: var(--transition);
         }
 
-        header {
-            text-align: center;
-            padding: 80px 20px 40px;
+        .theme-toggle {
+            position: fixed; top: 20px; left: 20px;
+            width: 45px; height: 45px; border-radius: 12px;
+            background: var(--primary-glow); color: white;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 1000; border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        header h1 {
-            font-size: 3rem;
-            font-weight: 900;
-            background: linear-gradient(to bottom, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-        }
-
-        header p {
-            color: var(--primary-glow);
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-            opacity: 0.9;
-        }
+        header { text-align: center; padding: 60px 20px 30px; }
+        header h1 { font-size: 2.5rem; font-weight: 900; color: var(--header-text); margin-bottom: 10px; }
+        header p { color: var(--primary-glow); font-size: 1.1rem; }
 
         .container {
-            max-width: 1300px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            padding: 20px 20px 100px;
+            max-width: 1400px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px; padding: 20px 20px 80px;
         }
 
         .card {
-            background: var(--card-glass);
-            border: 1px solid var(--border-glass);
-            border-radius: 24px;
-            padding: 35px 20px;
-            text-align: center;
-            text-decoration: none;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 20px; padding: 30px 20px; text-align: center;
+            text-decoration: none; transition: var(--transition);
+            backdrop-filter: blur(10px); display: flex; flex-direction: column;
         }
 
         .card:hover {
-            transform: translateY(-12px);
-            border-color: var(--primary-glow);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(56, 189, 248, 0.1);
+            transform: translateY(-8px); border-color: var(--primary-glow);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
 
         .icon-box {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 35px;
-            border-radius: 22px;
-            color: white;
-            transition: 0.4s;
+            width: 70px; height: 70px; margin: 0 auto 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px; border-radius: 18px; color: white;
         }
 
-        /* تدرجات ألوان فخمة ومتنوعة */
-        .c1 { background: linear-gradient(135deg, #38bdf8, #1e40af); } /* قدرات */
-        .c2 { background: linear-gradient(135deg, #10b981, #064e3b); } /* قرآن */
-        .c3 { background: linear-gradient(135deg, #f59e0b, #d97706); } /* روابط */
-        .c4 { background: linear-gradient(135deg, #8b5cf6, #4c1d95); } /* تاريخ */
-        .c5 { background: linear-gradient(135deg, #06b6d4, #0891b2); } /* قدرات مانيوس */
-        .c6 { background: linear-gradient(135deg, #ef4444, #991b1b); } /* فولتشر */
-        .c7 { background: linear-gradient(135deg, #6366f1, #312e81); } /* كتابة أسئلة */
-        .c8 { background: linear-gradient(135deg, #ec4899, #9d174d); } /* كفايات */
-        .c9 { background: linear-gradient(135deg, #f97316, #c2410c); } /* ميزان */
-        .c10 { background: linear-gradient(135deg, #14b8a6, #0f766e); } /* محراب */
+        /* تدرجات الألوان للـ 12 موقع */
+        .c1 { background: linear-gradient(135deg, #38bdf8, #1e40af); }
+        .c2 { background: linear-gradient(135deg, #10b981, #064e3b); }
+        .c3 { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .c4 { background: linear-gradient(135deg, #8b5cf6, #4c1d95); }
+        .c5 { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        .c6 { background: linear-gradient(135deg, #ef4444, #991b1b); }
+        .c7 { background: linear-gradient(135deg, #6366f1, #312e81); }
+        .c8 { background: linear-gradient(135deg, #ec4899, #9d174d); }
+        .c9 { background: linear-gradient(135deg, #f97316, #c2410c); }
+        .c10 { background: linear-gradient(135deg, #14b8a6, #0f766e); }
+        .c11 { background: linear-gradient(135deg, #2563eb, #1e3a8a); }
+        .c12 { background: linear-gradient(135deg, #d4af37, #b8860b); } /* منصة الجمهور */
 
-        .card h3 {
-            font-size: 1.4rem;
-            color: #fff;
-            margin-bottom: 10px;
-        }
+        .card h3 { font-size: 1.25rem; color: var(--text-main); margin-bottom: 8px; }
+        .card p { font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; margin: 0; }
 
-        .card p {
-            font-size: 0.9rem;
-            color: #94a3b8;
-            line-height: 1.5;
-        }
-
-        footer {
-            text-align: center;
-            padding: 40px;
-            color: #475569;
-            font-size: 0.9rem;
-            border-top: 1px solid var(--border-glass);
-            width: 100%;
-        }
+        footer { text-align: center; padding: 30px; color: var(--text-sub); border-top: 1px solid var(--card-border); }
     </style>
 </head>
-<body>
+<body data-theme="dark">
+
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
+    <i class="fas fa-sun"></i>
+</button>
 
 <header>
-    <h1>معرض منصات الفيفي</h1>
-    <p>حلول تقنية وتعليمية متكاملة للجمهور</p>
+    <h1>بوابة عبد العزيز الفيفي الرقمية</h1>
+    <p>بوابتكم الشاملة للحلول التعليمية والتقنية</p>
 </header>
 
 <div class="container">
@@ -132,7 +109,7 @@
     <a href="https://aztlaztl1512-bit.github.io/MAHME-/" class="card" target="_blank">
         <div class="icon-box c1"><i class="fas fa-graduation-cap"></i></div>
         <h3>محاكي القدرات (1)</h3>
-        <p>التدريب الذكي والمحاكي الأدق لاختبارات القدرات العامة.</p>
+        <p>التدريب الذكي والمحاكي الأدق لاختبارات القدرات.</p>
     </a>
 
     <a href="https://school1school2-stack.github.io/quran-radio/" class="card" target="_blank">
@@ -144,7 +121,7 @@
     <a href="https://abonaoaf.github.io/An1/" class="card" target="_blank">
         <div class="icon-box c3"><i class="fas fa-link"></i></div>
         <h3>اختصار الروابط</h3>
-        <p>أداة احترافية لتحويل الروابط الطويلة إلى روابط ذكية.</p>
+        <p>أداة احترافية لتحويل الروابط الطويلة إلى ذكية.</p>
     </a>
 
     <a href="https://school1school2-stack.github.io/Lk/" class="card" target="_blank">
@@ -156,7 +133,7 @@
     <a href="https://verbaltest-epazvzu9.manus.space/" class="card" target="_blank">
         <div class="icon-box c5"><i class="fas fa-brain"></i></div>
         <h3>القدرات اللفظي (M)</h3>
-        <p>منصة متطورة لاختبارات القسم اللفظي بأسلوب تفاعلي.</p>
+        <p>منصة متطورة لاختبارات القسم اللفظي التفاعلية.</p>
     </a>
 
     <a href="https://abonaoaf.github.io/An/" class="card" target="_blank">
@@ -174,13 +151,13 @@
     <a href="https://school1school2-stack.github.io/Abd-mdara/" class="card" target="_blank">
         <div class="icon-box c8"><i class="fas fa-book-open"></i></div>
         <h3>الكفايات اللغوية</h3>
-        <p>تعزيز المهارات اللغوية والتدريب على معايير الكفايات.</p>
+        <p>تعزيز المهارات اللغوية والتدريب على المعايير.</p>
     </a>
 
     <a href="https://school1school2-stack.github.io/Ratbe/" class="card" target="_blank">
         <div class="icon-box c9"><i class="fas fa-wallet"></i></div>
         <h3>ميزان المصروفات</h3>
-        <p>أداتك الذكية لضبط الميزانية وتتبع المصاريف بدقة.</p>
+        <p>أداتك الذكية لضبط الميزانية وتتبع المصاريف.</p>
     </a>
 
     <a href="https://aztlaztl1512-bit.github.io/ABO-NAOAF/" class="card" target="_blank">
@@ -189,12 +166,38 @@
         <p>واحة إيمانية للأذكار والأوراد اليومية بتصميم هادئ.</p>
     </a>
 
+    <a href="https://school1school2-stack.github.io/Vvvadmin/" class="card" target="_blank">
+        <div class="icon-box c11"><i class="fas fa-chart-line"></i></div>
+        <h3>تحليل النتائج</h3>
+        <p>لوحة تحكم ذكية لتحليل أداء الطلاب والنتائج.</p>
+    </a>
+
+    <a href="https://school1school2-stack.github.io/ABO-NAOAF/" class="card" target="_blank">
+        <div class="icon-box c12"><i class="fas fa-users"></i></div>
+        <h3>منصة الجمهور</h3>
+        <p>بوابتي الرئيسية المخصصة للتواصل والتفاعل مع الجمهور.</p>
+    </a>
+
 </div>
 
 <footer>
-    تم التصميم بكل فخر بواسطة عبد العزيز الفيفي &copy; 2026
+    تم التصميم بواسطة عبد العزيز الفيفي &copy; 2026
 </footer>
+
+<script>
+    function toggleTheme() {
+        const body = document.body;
+        const btn = document.getElementById('themeBtn');
+        const currentTheme = body.getAttribute('data-theme');
+        if (currentTheme === 'dark') {
+            body.setAttribute('data-theme', 'light');
+            btn.innerHTML = '<i class="fas fa-moon"></i>';
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            btn.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+    }
+</script>
 
 </body>
 </html>
-
