@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة أعمال عبد العزيز الفيفي | الذكاء والتقنية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #050810;
+            --card-glass: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --primary-glow: #38bdf8;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: radial-gradient(circle at center, #111827 0%, #050810 100%);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 80px 20px 40px;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(to bottom, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        header p {
+            color: var(--primary-glow);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 20px 20px 100px;
+        }
+
+        .card {
+            background: var(--card-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 35px 20px;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-12px);
+            border-color: var(--primary-glow);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(56, 189, 248, 0.1);
+        }
+
+        .icon-box {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            border-radius: 22px;
+            color: white;
+            transition: 0.4s;
+        }
+
+        /* تدرجات ألوان فخمة ومتنوعة */
+        .c1 { background: linear-gradient(135deg, #38bdf8, #1e40af); } /* قدرات */
+        .c2 { background: linear-gradient(135deg, #10b981, #064e3b); } /* قرآن */
+        .c3 { background: linear-gradient(135deg, #f59e0b, #d97706); } /* روابط */
+        .c4 { background: linear-gradient(135deg, #8b5cf6, #4c1d95); } /* تاريخ */
+        .c5 { background: linear-gradient(135deg, #06b6d4, #0891b2); } /* قدرات مانيوس */
+        .c6 { background: linear-gradient(135deg, #ef4444, #991b1b); } /* فولتشر */
+        .c7 { background: linear-gradient(135deg, #6366f1, #312e81); } /* كتابة أسئلة */
+        .c8 { background: linear-gradient(135deg, #ec4899, #9d174d); } /* كفايات */
+        .c9 { background: linear-gradient(135deg, #f97316, #c2410c); } /* ميزان */
+        .c10 { background: linear-gradient(135deg, #14b8a6, #0f766e); } /* محراب */
+
+        .card h3 {
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #475569;
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-glass);
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>معرض منصات الفيفي</h1>
+    <p>حلول تقنية وتعليمية متكاملة للجمهور</p>
+</header>
+
+<div class="container">
+
+    <a href="https://aztlaztl1512-bit.github.io/MAHME-/" class="card" target="_blank">
+        <div class="icon-box c1"><i class="fas fa-graduation-cap"></i></div>
+        <h3>محاكي القدرات (1)</h3>
+        <p>التدريب الذكي والمحاكي الأدق لاختبارات القدرات العامة.</p>
+    </a>
+
+    <a href="https://school1school2-stack.github.io/quran-radio/" class="card" target="_blank">
+        <div class="icon-box c2"><i class="fas fa-mosque"></i></div>
+        <h3>إذاعة القرآن الكريم</h3>
+        <p>بث مباشر وتلاوات عطرة بأصوات أشهر القراء.</p>
+    </a>
+
+    <a href="https://abonaoaf.github.io/An1/" class="card" target="_blank">
+        <div class="icon-box c3"><i class="fas fa-link"></i></div>
+        <h3>اختصار الروابط</h3>
+        <p>أداة احترافية لتحويل الروابط الطويلة إلى روابط ذكية.</p>
+    </a>
+
+    <a href="https://school1school2-stack.github.io/Lk/" class="card" target="_blank">
+        <div class="icon-box c4"><i class="fas fa-calendar-alt"></i></div>
+        <h3>محول التاريخ</h3>
+        <p>تحويل دقيق وفوري بين التاريخ الهجري والميلادي.</p>
+    </a>
+
+    <a href="https://verbaltest-epazvzu9.manus.space/" class="card" target="_blank">
+        <div class="icon-box c5"><i class="fas fa-brain"></i></div>
+        <h3>القدرات اللفظي (M)</h3>
+        <p>منصة متطورة لاختبارات القسم اللفظي بأسلوب تفاعلي.</p>
+    </a>
+
+    <a href="https://abonaoaf.github.io/An/" class="card" target="_blank">
+        <div class="icon-box c6"><i class="fas fa-v"></i></div>
+        <h3>فولتشر Vulture</h3>
+        <p>بوابة الخدمات الرقمية والاشتراكات المتنوعة.</p>
+    </a>
+
+    <a href="https://school1school2-stack.github.io/QQQ3/" class="card" target="_blank">
+        <div class="icon-box c7"><i class="fas fa-pen-fancy"></i></div>
+        <h3>نموذج الأسئلة</h3>
+        <p>نظام ذكي لتوليد وتنظيم أسئلة القدرات باحترافية.</p>
+    </a>
+
+    <a href="https://school1school2-stack.github.io/Abd-mdara/" class="card" target="_blank">
+        <div class="icon-box c8"><i class="fas fa-book-open"></i></div>
+        <h3>الكفايات اللغوية</h3>
+        <p>تعزيز المهارات اللغوية والتدريب على معايير الكفايات.</p>
+    </a>
+
+    <a href="https://school1school2-stack.github.io/Ratbe/" class="card" target="_blank">
+        <div class="icon-box c9"><i class="fas fa-wallet"></i></div>
+        <h3>ميزان المصروفات</h3>
+        <p>أداتك الذكية لضبط الميزانية وتتبع المصاريف بدقة.</p>
+    </a>
+
+    <a href="https://aztlaztl1512-bit.github.io/ABO-NAOAF/" class="card" target="_blank">
+        <div class="icon-box c10"><i class="fas fa-heart"></i></div>
+        <h3>محراب الذكر</h3>
+        <p>واحة إيمانية للأذكار والأوراد اليومية بتصميم هادئ.</p>
+    </a>
+
+</div>
+
+<footer>
+    تم التصميم بكل فخر بواسطة عبد العزيز الفيفي &copy; 2026
+</footer>
+
+</body>
+</html>
+
