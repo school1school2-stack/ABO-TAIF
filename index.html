@@ -45,21 +45,90 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        header { text-align: center; padding: 60px 20px 30px; }
+        header { text-align: center; padding: 60px 20px 20px; }
         header h1 { font-size: 2.5rem; font-weight: 900; color: var(--header-text); margin-bottom: 10px; }
         header p { color: var(--primary-glow); font-size: 1.1rem; }
+
+        /* شريط التحكم بالترتيب والحفظ */
+        .controls-bar {
+            max-width: 1400px;
+            margin: 0 auto 20px;
+            padding: 0 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-action:hover {
+            border-color: var(--primary-glow);
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .btn-save {
+            background: var(--primary-glow);
+            color: #050810;
+            border: none;
+        }
+
+        .btn-save:hover {
+            background: #0284c7;
+            color: white;
+        }
+
+        .btn-save.unsaved {
+            background: #f97316 !important;
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(249, 115, 22, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+        }
 
         .container {
             max-width: 1400px; margin: 0 auto;
             display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px; padding: 20px 20px 80px;
+            gap: 20px; padding: 0 20px 80px;
         }
 
         .card {
             background: var(--card-bg); border: 1px solid var(--card-border);
             border-radius: 20px; padding: 30px 20px; text-align: center;
-            text-decoration: none; transition: var(--transition);
+            text-decoration: none; transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
             backdrop-filter: blur(10px); display: flex; flex-direction: column;
+            cursor: grab;
+            position: relative;
+            user-select: none;
+        }
+
+        .card:active {
+            cursor: grabbing;
+        }
+
+        .card.dragging {
+            opacity: 0.4;
+            transform: scale(0.95);
+            border-color: var(--primary-glow);
         }
 
         .card:hover {
@@ -67,10 +136,26 @@
             box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
 
+        .drag-handle {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: var(--text-sub);
+            opacity: 0.4;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .card:hover .drag-handle {
+            opacity: 1;
+            color: var(--primary-glow);
+        }
+
         .icon-box {
             width: 70px; height: 70px; margin: 0 auto 15px;
             display: flex; align-items: center; justify-content: center;
             font-size: 30px; border-radius: 18px; color: white;
+            pointer-events: none;
         }
 
         /* تدرجات ألوان الأيقونات */
@@ -92,10 +177,32 @@
         .c16 { background: linear-gradient(135deg, #06b6d4, #10b981); }
         .c17 { background: linear-gradient(135deg, #e11d48, #881337); }
 
-        .card h3 { font-size: 1.25rem; color: var(--text-main); margin-bottom: 8px; }
-        .card p { font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; margin: 0; }
+        .card h3 { font-size: 1.25rem; color: var(--text-main); margin-bottom: 8px; pointer-events: none; }
+        .card p { font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; margin: 0; pointer-events: none; }
 
         footer { text-align: center; padding: 30px; color: var(--text-sub); border-top: 1px solid var(--card-border); }
+
+        /* اشعار حفظ الترتيب */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+            z-index: 2000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body data-theme="dark">
@@ -109,178 +216,212 @@
     <p>حلول تعليمية • تقنيات ذكية • خدمات رقمية</p>
 </header>
 
-<div class="container">
+<div class="controls-bar">
+    <button class="btn-action btn-save" id="saveBtn" onclick="saveOrder()">
+        <i class="fas fa-save"></i> حفظ الترتيب
+    </button>
+    <button class="btn-action" onclick="resetOrder()">
+        <i class="fas fa-rotate-right"></i> إعادة الضبط
+    </button>
+</div>
+
+<div class="container" id="cardsContainer">
 
     <!-- 1. منصة القدرات -->
-    <a href="https://aztlaztl1512-bit.github.io/MAHME-/" class="card" target="_blank">
+    <a href="https://aztlaztl1512-bit.github.io/MAHME-/" class="card" target="_blank" draggable="true" data-id="1">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c1"><i class="fas fa-graduation-cap"></i></div>
         <h3>محاكي القدرات (1)</h3>
         <p>التدريب الذكي والمحاكي الأدق لاختبارات القدرات.</p>
     </a>
 
     <!-- 2. إذاعة القرآن -->
-    <a href="https://school1school2-stack.github.io/quran-radio/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/quran-radio/" class="card" target="_blank" draggable="true" data-id="2">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c2"><i class="fas fa-mosque"></i></div>
         <h3>إذاعة القرآن الكريم</h3>
         <p>بث مباشر وتلاوات عطرة بأصوات أشهر القراء.</p>
     </a>
 
     <!-- 3. اختصار الروابط -->
-    <a href="https://abonaoaf.github.io/N/" class="card" target="_blank">
+    <a href="https://abonaoaf.github.io/N/" class="card" target="_blank" draggable="true" data-id="3">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c3"><i class="fas fa-link"></i></div>
         <h3>اختصار الروابط</h3>
         <p>أداة احترافية لتحويل الروابط الطويلة إلى ذكية.</p>
     </a>
 
     <!-- 4. محول التاريخ -->
-    <a href="https://school1school2-stack.github.io/Lk/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/Lk/" class="card" target="_blank" draggable="true" data-id="4">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c4"><i class="fas fa-calendar-alt"></i></div>
         <h3>محول التاريخ</h3>
         <p>تحويل فوري ودقيق بين الهجري والميلادي.</p>
     </a>
 
     <!-- 5. القدرات اللفظي مانيوس -->
-    <a href="https://verbaltest-epazvzu9.manus.space/" class="card" target="_blank">
+    <a href="https://verbaltest-epazvzu9.manus.space/" class="card" target="_blank" draggable="true" data-id="5">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c5"><i class="fas fa-brain"></i></div>
         <h3>القدرات اللفظي (M)</h3>
         <p>منصة متطورة لاختبارات القسم اللفظي التفاعلية.</p>
     </a>
 
     <!-- 6. فولتشر -->
-    <a href="https://abonaoaf.github.io/An/" class="card" target="_blank">
+    <a href="https://abonaoaf.github.io/An/" class="card" target="_blank" draggable="true" data-id="6">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c6"><i class="fas fa-v"></i></div>
         <h3>فولتشر Vulture</h3>
         <p>بوابة الخدمات الرقمية والاشتراكات المتنوعة.</p>
     </a>
 
     <!-- 7. نموذج كتابة الأسئلة -->
-    <a href="https://school1school2-stack.github.io/QQQ3/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/QQQ3/" class="card" target="_blank" draggable="true" data-id="7">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c7"><i class="fas fa-pen-fancy"></i></div>
         <h3>نموذج الأسئلة</h3>
         <p>نظام ذكي لتوليد وتنظيم أسئلة القدرات.</p>
     </a>
 
     <!-- 8. الكفايات اللغوية -->
-    <a href="https://school1school2-stack.github.io/Abd-mdara/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/Abd-mdara/" class="card" target="_blank" draggable="true" data-id="8">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c8"><i class="fas fa-book-open"></i></div>
         <h3>الكفايات اللغوية</h3>
         <p>تعزيز المهارات اللغوية والتدريب على المعايير.</p>
     </a>
 
     <!-- 9. ميزان المصروفات -->
-    <a href="https://school1school2-stack.github.io/Ratbe/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/Ratbe/" class="card" target="_blank" draggable="true" data-id="9">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c9"><i class="fas fa-wallet"></i></div>
         <h3>ميزان المصروفات</h3>
         <p>أداتك الذكية لضبط الميزانية وتتبع المصاريف.</p>
     </a>
 
     <!-- 10. محراب الذكر -->
-    <a href="https://aztlaztl1512-bit.github.io/ABO-NAOAF/" class="card" target="_blank">
+    <a href="https://aztlaztl1512-bit.github.io/ABO-NAOAF/" class="card" target="_blank" draggable="true" data-id="10">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c10"><i class="fas fa-heart"></i></div>
         <h3>محراب الذكر</h3>
         <p>واحة إيمانية للأذكار والأوراد اليومية.</p>
     </a>
 
     <!-- 11. تحليل النتائج 1 -->
-    <a href="https://school1school2-stack.github.io/Vvvadmin/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/Vvvadmin/" class="card" target="_blank" draggable="true" data-id="11">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c11"><i class="fas fa-chart-line"></i></div>
         <h3>تحليل النتائج (1)</h3>
         <p>لوحة تحكم ذكية لتحليل أداء الطلاب.</p>
     </a>
 
     <!-- 12. منصة الجمهور -->
-    <a href="https://school1school2-stack.github.io/ABO-NAOAF/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/ABO-NAOAF/" class="card" target="_blank" draggable="true" data-id="12">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c12"><i class="fas fa-users"></i></div>
         <h3>منصة الجمهور</h3>
         <p>بوابتي الرئيسية للتواصل والتفاعل العام.</p>
     </a>
 
     <!-- 13. تحليل النتائج 2 -->
-    <a href="https://school1school2-stack.github.io/AAAadmin/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/AAAadmin/" class="card" target="_blank" draggable="true" data-id="13">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c13"><i class="fas fa-database"></i></div>
         <h3>تحليل النتائج (2)</h3>
         <p>نظام إحصائي متطور لرصد ومتابعة البيانات.</p>
     </a>
 
     <!-- 14. أسماء الطلاب المعتمدة -->
-    <a href="https://aztlaztl1512-bit.github.io/ZBID/" class="card" target="_blank">
+    <a href="https://aztlaztl1512-bit.github.io/ZBID/" class="card" target="_blank" draggable="true" data-id="14">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c14"><i class="fas fa-id-card"></i></div>
         <h3>أسماء الطلاب</h3>
         <p>السجلات المعتمدة وقوائم الطلاب المسجلين.</p>
     </a>
     
     <!-- 15. سبورة نواف للحروف والكلمات -->
-    <a href="https://abonaoaf.github.io/NAOAF/" class="card" target="_blank">
+    <a href="https://abonaoaf.github.io/NAOAF/" class="card" target="_blank" draggable="true" data-id="15">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c16"><i class="fas fa-chalkboard"></i></div>
         <h3>سبورة نواف</h3>
         <p>منصة تعليمية تفاعلية لتعلم الحروف والكلمات بطريقة ممتعة.</p>
     </a>
 
     <!-- 16. تحليل نتائج الكفايات اللغوية -->
-    <a href="https://school1school2-stack.github.io/ALkfaeat-1/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/ALkfaeat-1/" class="card" target="_blank" draggable="true" data-id="16">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c11"><i class="fas fa-chart-pie"></i></div>
         <h3>تحليل نتائج الكفايات</h3>
         <p>لوحة تحكم ذكية لرصد وتحليل أداء طلاب الكفايات اللغوية.</p>
     </a>
 
     <!-- 17. منصة الكفايات اللغوية -->
-    <a href="https://school1school2-stack.github.io/kifayat-language/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/kifayat-language/" class="card" target="_blank" draggable="true" data-id="17">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c12"><i class="fas fa-language"></i></div>
         <h3>منصة الكفايات اللغوية</h3>
         <p>مرجع التدريبات والتطبيقات التفاعلية اللغوية.</p>
     </a>
 
     <!-- 18. أسماء الطلاب (ثانوية الأمير عبدالمجيد) -->
-    <a href="https://aztlaztl1512-bit.github.io/ZBID1/" class="card" target="_blank">
+    <a href="https://aztlaztl1512-bit.github.io/ZBID1/" class="card" target="_blank" draggable="true" data-id="18">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c14"><i class="fas fa-address-book"></i></div>
         <h3>أسماء طلاب الكفايات</h3>
         <p>السجلات المعتمدة لطلاب ثانوية الأمير عبدالمجيد.</p>
     </a>
 
     <!-- 19. تصحيح إلكتروني -->
-    <a href="https://school1school2-stack.github.io/TTT/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/TTT/" class="card" target="_blank" draggable="true" data-id="19">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c15"><i class="fas fa-file-signature"></i></div>
         <h3>تصحيح إلكتروني</h3>
         <p>نظام ذكي ومتقدم لتصحيح الاختبارات وتقييم الإجابات.</p>
     </a>
 
     <!-- 20. بوابة الطالب -->
-    <a href="https://school1school2-stack.github.io/student-portal./" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/student-portal./" class="card" target="_blank" draggable="true" data-id="20">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c1"><i class="fas fa-user-graduate"></i></div>
         <h3>بوابة الطالب</h3>
         <p>استعراض النتائج والتحقق من الاختبارات والتقييمات بسهولة.</p>
     </a>
 
     <!-- 21. كشف متابعة الطلاب -->
-    <a href="https://school1school2-stack.github.io/Abdul-Majeed1/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/Abdul-Majeed1/" class="card" target="_blank" draggable="true" data-id="21">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c2"><i class="fas fa-clipboard-check"></i></div>
         <h3>كشف متابعة الطلاب</h3>
         <p>متابعة مستويات الطلاب ورصد تقدمهم الأكاديمي بشكل دقيق.</p>
     </a>
 
     <!-- 22. منصة المعلمين -->
-    <a href="https://school1school2-stack.github.io/Abdul-Majeed/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/Abdul-Majeed/" class="card" target="_blank" draggable="true" data-id="22">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c3"><i class="fas fa-chalkboard-user"></i></div>
         <h3>منصة المعلمين</h3>
         <p>بوابة الخدمات والأدوات التعليمية المخصصة للمعلمين.</p>
     </a>
 
     <!-- 23. منصة المعلمين - متابعة السلوكيات والإيجابيات -->
-    <a href="https://school1school2-stack.github.io/Abdul-majeed2/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/Abdul-majeed2/" class="card" target="_blank" draggable="true" data-id="23">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c17"><i class="fas fa-user-check"></i></div>
         <h3>متابعة السلوكيات والإيجابيات</h3>
         <p>منصة المعلمين لكشوف متابعة السلوكيات والإيجابيات الطلابية بأسلوب ذكي.</p>
     </a>
 
     <!-- 24. كشكول القدرات -->
-    <a href="https://school1school2-stack.github.io/Qodrat/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/Qodrat/" class="card" target="_blank" draggable="true" data-id="24">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c8"><i class="fas fa-book-bookmark"></i></div>
         <h3>كشكول القدرات</h3>
         <p>منصة تجميعات وملاحظات شاملة لاختبارات القدرات العامة.</p>
     </a>
 
     <!-- 25. كشف الحضور والسلوك اليومي -->
-    <a href="https://school1school2-stack.github.io/2222/" class="card" target="_blank">
+    <a href="https://school1school2-stack.github.io/2222/" class="card" target="_blank" draggable="true" data-id="25">
+        <i class="fas fa-grip-vertical drag-handle"></i>
         <div class="icon-box c10"><i class="fas fa-user-clock"></i></div>
         <h3>كشف الحضور والسلوك اليومي</h3>
         <p>نظام يومي لتسجيل ومتابعة حضور وغياب وسلوكيات الطلاب.</p>
@@ -288,11 +429,24 @@
 
 </div>
 
+<div class="toast" id="toast">تم حفظ الترتيب الجديد بنجاح!</div>
+
 <footer>
     تم التصميم بواسطة عبد العزيز الفيفي &copy; 2026
 </footer>
 
 <script>
+    const container = document.getElementById('cardsContainer');
+    const saveBtn = document.getElementById('saveBtn');
+    let draggedCard = null;
+    let originalOrder = [];
+
+    // حفظ الترتيب الأصلي للضبط
+    document.querySelectorAll('.card').forEach(card => {
+        originalOrder.push(card.getAttribute('data-id'));
+    });
+
+    // تبديل الوضع الليلي والنهاري
     function toggleTheme() {
         const body = document.body;
         const btn = document.getElementById('themeBtn');
@@ -305,6 +459,134 @@
             btn.innerHTML = '<i class="fas fa-sun"></i>';
         }
     }
+
+    // إعداد السحب والإفلات
+    function initDragAndDrop() {
+        const cards = document.querySelectorAll('.card');
+
+        cards.forEach(card => {
+            // كبح فتح الرابط أثناء السحب
+            card.addEventListener('click', (e) => {
+                if (card.classList.contains('was-dragged')) {
+                    e.preventDefault();
+                    card.classList.remove('was-dragged');
+                }
+            });
+
+            card.addEventListener('dragstart', (e) => {
+                draggedCard = card;
+                card.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+
+            card.addEventListener('dragend', () => {
+                card.classList.remove('dragging');
+                draggedCard = null;
+            });
+
+            card.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                const afterElement = getDragAfterElement(container, e.clientX, e.clientY);
+                if (draggedCard) {
+                    draggedCard.classList.add('was-dragged');
+                    if (afterElement == null) {
+                        container.appendChild(draggedCard);
+                    } else {
+                        container.insertBefore(draggedCard, afterElement);
+                    }
+                    markUnsaved();
+                }
+            });
+        });
+    }
+
+    function getDragAfterElement(container, x, y) {
+        const draggableElements = [...container.querySelectorAll('.card:not(.dragging)')];
+
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = (x - box.left - box.width / 2) + (y - box.top - box.height / 2);
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    // تغيير شكل زر الحفظ لإشعار المستخدم بتغيير الترتيب
+    function markUnsaved() {
+        saveBtn.classList.add('unsaved');
+        saveBtn.innerHTML = '<i class="fas fa-exclamation-circle"></i> حفظ الترتيب الجديدة';
+    }
+
+    // حفظ الترتيب في LocalStorage
+    function saveOrder() {
+        const currentCards = document.querySelectorAll('.card');
+        const orderArray = [];
+        currentCards.forEach(card => {
+            orderArray.push(card.getAttribute('data-id'));
+        });
+        localStorage.setItem('fifi_portal_order', JSON.stringify(orderArray));
+        
+        saveBtn.classList.remove('unsaved');
+        saveBtn.innerHTML = '<i class="fas fa-check"></i> تم الحفظ';
+        setTimeout(() => {
+            saveBtn.innerHTML = '<i class="fas fa-save"></i> حفظ الترتيب';
+        }, 2000);
+
+        showToast('تم حفظ الترتيب بنجاح!');
+    }
+
+    // استعادة الترتيب المحفوظ عند تحميل الصفحة
+    function loadSavedOrder() {
+        const savedOrder = JSON.parse(localStorage.getItem('fifi_portal_order'));
+        if (!savedOrder) return;
+
+        const cardMap = {};
+        document.querySelectorAll('.card').forEach(card => {
+            cardMap[card.getAttribute('data-id')] = card;
+        });
+
+        savedOrder.forEach(id => {
+            if (cardMap[id]) {
+                container.appendChild(cardMap[id]);
+            }
+        });
+    }
+
+    // إعادة الضبط للترتيب الافتراضي
+    function resetOrder() {
+        localStorage.removeItem('fifi_portal_order');
+        const cardMap = {};
+        document.querySelectorAll('.card').forEach(card => {
+            cardMap[card.getAttribute('data-id')] = card;
+        });
+
+        originalOrder.forEach(id => {
+            if (cardMap[id]) {
+                container.appendChild(cardMap[id]);
+            }
+        });
+
+        saveBtn.classList.remove('unsaved');
+        saveBtn.innerHTML = '<i class="fas fa-save"></i> حفظ الترتيب';
+        showToast('تمت إعادة الضبط للترتيب الأصلي');
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2500);
+    }
+
+    // تشغيل الأحداث عند تجهيز الصفحة
+    loadSavedOrder();
+    initDragAndDrop();
 </script>
 
 </body>
