@@ -6,7 +6,7 @@
     <title>بوابة أعمال عبد العزيز الفيفي | الذكاء والتقنية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- مكتبة دعم اللمس على التابلت والجوال -->
+    <!-- مكتبة دعم اللمس والسحب للتابلت -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <style>
         :root {
@@ -53,7 +53,7 @@
         header h1 { font-size: 2.3rem; font-weight: 900; color: var(--header-text); margin-bottom: 10px; }
         header p { color: var(--primary-glow); font-size: 1.1rem; }
 
-        /* شريط التحكم بالحفظ باللمس */
+        /* شريط التحكم السحابي */
         .controls-bar {
             max-width: 1400px;
             margin: 0 auto 25px;
@@ -209,10 +209,10 @@
 </header>
 
 <div class="controls-bar">
-    <button class="btn-action btn-save" id="saveBtn" onclick="saveOrder()">
-        <i class="fas fa-save"></i> حفظ الترتيب
+    <button class="btn-action btn-save" id="saveBtn">
+        <i class="fas fa-cloud-upload-alt"></i> حفظ الترتيب في السحابة
     </button>
-    <button class="btn-action" onclick="resetOrder()">
+    <button class="btn-action" id="resetBtn">
         <i class="fas fa-rotate-right"></i> إعادة الضبط
     </button>
 </div>
@@ -421,43 +421,62 @@
 
 </div>
 
-<div class="toast" id="toast">تم حفظ الترتيب الجديد بنجاح!</div>
+<div class="toast" id="toast">تم حفظ الترتيب الجديد في السحابة بنجاح!</div>
 
 <footer>
     تم التصميم بواسطة عبد العزيز الفيفي &copy; 2026
 </footer>
 
-<script>
+<!-- برمجية ربط السحابة (Firebase) -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // نفس إعدادات السحابة الخاصة بك
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYUF6MuzyQQIqnd_IqFMGrx",
+        authDomain: "your-apps-3511e.firebaseapp.com",
+        projectId: "your-apps-3511e",
+        storageBucket: "your-apps-3511e.firebasestorage.app",
+        messagingSenderId: "309311377713",
+        appId: "1:309311377713:web:2fb740e8e687af40f2010",
+        measurementId: "G-MLCQ329BSV"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
     const container = document.getElementById('cardsContainer');
     const saveBtn = document.getElementById('saveBtn');
-    let originalOrder = [];
+    const resetBtn = document.getElementById('resetBtn');
+    const themeBtn = document.getElementById('themeBtn');
 
-    // حفظ الترتيب الأصلي
+    let originalOrder = [];
     document.querySelectorAll('.card').forEach(card => {
         originalOrder.push(card.getAttribute('data-id'));
     });
 
-    // تبديل الوضع الليلي والنهاري
-    function toggleTheme() {
+    // التحكم بالوضع الليلي
+    window.toggleTheme = function() {
         const body = document.body;
-        const btn = document.getElementById('themeBtn');
         const currentTheme = body.getAttribute('data-theme');
         if (currentTheme === 'dark') {
             body.setAttribute('data-theme', 'light');
-            btn.innerHTML = '<i class="fas fa-moon"></i>';
+            themeBtn.innerHTML = '<i class="fas fa-moon"></i>';
         } else {
             body.setAttribute('data-theme', 'dark');
-            btn.innerHTML = '<i class="fas fa-sun"></i>';
+            themeBtn.innerHTML = '<i class="fas fa-sun"></i>';
         }
+
     }
 
-    // تهيئة السحب باللمس للتابلت عبر SortableJS
-    let sortable = new Sortable(container, {
+    // تهيئة السحب باللمس للتابلت
+    new Sortable(container, {
         animation: 150,
-        handle: '.drag-handle', // السحب عبر مقبض النقاط
+        handle: '.drag-handle',
         ghostClass: 'sortable-ghost',
         dragClass: 'sortable-drag',
-        delay: 50, // تفادي التحريك بالخطأ أثناء التمرير
+        delay: 50,
         delayOnTouchOnly: true,
         onEnd: function () {
             markUnsaved();
@@ -466,58 +485,74 @@
 
     function markUnsaved() {
         saveBtn.classList.add('unsaved');
-        saveBtn.innerHTML = '<i class="fas fa-exclamation-circle"></i> حفظ الترتيب الجديدة';
+        saveBtn.innerHTML = '<i class="fas fa-exclamation-circle"></i> حفظ الترتيب بالسحابة';
     }
 
-    function saveOrder() {
+    // حفظ الترتيب في السحابة
+    async function saveOrderToCloud() {
         const currentCards = document.querySelectorAll('.card');
         const orderArray = [];
         currentCards.forEach(card => {
             orderArray.push(card.getAttribute('data-id'));
         });
-        localStorage.setItem('fifi_portal_order', JSON.stringify(orderArray));
-        
-        saveBtn.classList.remove('unsaved');
-        saveBtn.innerHTML = '<i class="fas fa-check"></i> تم الحفظ';
-        setTimeout(() => {
-            saveBtn.innerHTML = '<i class="fas fa-save"></i> حفظ الترتيب';
-        }, 2000);
 
-        showToast('تم حفظ الترتيب بنجاح!');
+        try {
+            saveBtn.disabled = true;
+            await setDoc(doc(db, "portal_config", "cards_order"), {
+                order: orderArray,
+                updatedAt: new Date().toISOString()
+            });
+
+            saveBtn.classList.remove('unsaved');
+            saveBtn.innerHTML = '<i class="fas fa-check"></i> تم الحفظ بالسحابة';
+            setTimeout(() => {
+                saveBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> حفظ الترتيب في السحابة';
+            }, 2000);
+
+            showToast('تم حفظ الترتيب بالسحابة بنجاح!');
+        } catch (error) {
+            console.error("خطأ أثناء الحفظ بالسحابة:", error);
+            showToast('حدث خطأ أثناء الحفظ بالسحابة');
+        } finally {
+            saveBtn.disabled = false;
+        }
     }
 
-    function loadSavedOrder() {
-        const savedOrder = JSON.parse(localStorage.getItem('fifi_portal_order'));
-        if (!savedOrder) return;
+    // استماع مباشر لترتيب السحابة الفوري
+    onSnapshot(doc(db, "portal_config", "cards_order"), (snapshot) => {
+        if (snapshot.exists()) {
+            const data = snapshot.data();
+            if (data && data.order) {
+                applyOrder(data.order);
+            }
+        }
+    });
 
+    function applyOrder(orderArray) {
         const cardMap = {};
         document.querySelectorAll('.card').forEach(card => {
             cardMap[card.getAttribute('data-id')] = card;
         });
 
-        savedOrder.forEach(id => {
+        orderArray.forEach(id => {
             if (cardMap[id]) {
                 container.appendChild(cardMap[id]);
             }
         });
     }
 
-    function resetOrder() {
-        localStorage.removeItem('fifi_portal_order');
-        const cardMap = {};
-        document.querySelectorAll('.card').forEach(card => {
-            cardMap[card.getAttribute('data-id')] = card;
-        });
+    // إعادة الضبط للترتيب الأصلي بالسحابة
+    async function resetOrderCloud() {
+        try {
+            await deleteDoc(doc(db, "portal_config", "cards_order"));
+            applyOrder(originalOrder);
 
-        originalOrder.forEach(id => {
-            if (cardMap[id]) {
-                container.appendChild(cardMap[id]);
-            }
-        });
-
-        saveBtn.classList.remove('unsaved');
-        saveBtn.innerHTML = '<i class="fas fa-save"></i> حفظ الترتيب';
-        showToast('تمت إعادة الضبط للترتيب الأصلي');
+            saveBtn.classList.remove('unsaved');
+            saveBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> حفظ الترتيب في السحابة';
+            showToast('تمت إعادة الضبط للترتيب الأصلي');
+        } catch (error) {
+            console.error("خطأ أثناء إعادة الضبط:", error);
+        }
     }
 
     function showToast(msg) {
@@ -529,7 +564,8 @@
         }, 2500);
     }
 
-    loadSavedOrder();
+    saveBtn.addEventListener('click', saveOrderToCloud);
+    resetBtn.addEventListener('click', resetOrderCloud);
 </script>
 
 </body>
