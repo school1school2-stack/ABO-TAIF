@@ -6,7 +6,7 @@
     <title>بوابة أعمال عبد العزيز الفيفي | الذكاء والتقنية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- مكتبة دعم اللمس والسحب للتابلت -->
+    <!-- مكتبة دعم اللمس والسحب المحدثة للتابلت -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <style>
         :root {
@@ -36,7 +36,6 @@
             color: var(--text-main);
             margin: 0; padding: 0; min-height: 100vh;
             transition: var(--transition);
-            touch-action: manipulation;
         }
 
         .theme-toggle {
@@ -53,7 +52,6 @@
         header h1 { font-size: 2.3rem; font-weight: 900; color: var(--header-text); margin-bottom: 10px; }
         header p { color: var(--primary-glow); font-size: 1.1rem; }
 
-        /* شريط التحكم السحابي */
         .controls-bar {
             max-width: 1400px;
             margin: 0 auto 25px;
@@ -117,6 +115,7 @@
             backdrop-filter: blur(10px); display: flex; flex-direction: column;
             position: relative;
             user-select: none;
+            -webkit-user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -132,16 +131,23 @@
             box-shadow: 0 16px 32px rgba(0,0,0,0.3);
         }
 
+        /* تخصيص مقبض السحب للتابلت */
         .drag-handle {
             position: absolute;
-            top: 15px;
-            left: 15px;
+            top: 10px;
+            left: 10px;
             color: var(--text-sub);
-            opacity: 0.6;
-            font-size: 1.1rem;
-            padding: 8px;
+            opacity: 0.8;
+            font-size: 1.3rem;
+            padding: 12px;
             cursor: grab;
-            touch-action: none;
+            touch-action: none; /* منع التمرير بالاصبع فوق المقبض لتسهيل السحب */
+            z-index: 10;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+            color: var(--primary-glow);
         }
 
         .icon-box {
@@ -432,7 +438,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // نفس إعدادات السحابة الخاصة بك
     const firebaseConfig = {
         apiKey: "AIzaSyDYUF6MuzyQQIqnd_IqFMGrx",
         authDomain: "your-apps-3511e.firebaseapp.com",
@@ -456,7 +461,20 @@
         originalOrder.push(card.getAttribute('data-id'));
     });
 
-    // التحكم بالوضع الليلي
+    // طريقة التحريك المخصصة بالكامل للتابلت واللمس
+    new Sortable(container, {
+        animation: 200,
+        handle: '.drag-handle', // السحب عبر زر النقاط فقط
+        ghostClass: 'sortable-ghost',
+        dragClass: 'sortable-drag',
+        touchStartThreshold: 3, // استجابة فورية جداً باللمس
+        forceFallback: true, // تفعيل محاكاة اللمس لتجنب مشاكل المتصفح على التابلت
+        fallbackClass: 'sortable-drag',
+        onEnd: function () {
+            markUnsaved();
+        }
+    });
+
     window.toggleTheme = function() {
         const body = document.body;
         const currentTheme = body.getAttribute('data-theme');
@@ -467,28 +485,13 @@
             body.setAttribute('data-theme', 'dark');
             themeBtn.innerHTML = '<i class="fas fa-sun"></i>';
         }
-
     }
-
-    // تهيئة السحب باللمس للتابلت
-    new Sortable(container, {
-        animation: 150,
-        handle: '.drag-handle',
-        ghostClass: 'sortable-ghost',
-        dragClass: 'sortable-drag',
-        delay: 50,
-        delayOnTouchOnly: true,
-        onEnd: function () {
-            markUnsaved();
-        }
-    });
 
     function markUnsaved() {
         saveBtn.classList.add('unsaved');
         saveBtn.innerHTML = '<i class="fas fa-exclamation-circle"></i> حفظ الترتيب بالسحابة';
     }
 
-    // حفظ الترتيب في السحابة
     async function saveOrderToCloud() {
         const currentCards = document.querySelectorAll('.card');
         const orderArray = [];
@@ -518,7 +521,6 @@
         }
     }
 
-    // استماع مباشر لترتيب السحابة الفوري
     onSnapshot(doc(db, "portal_config", "cards_order"), (snapshot) => {
         if (snapshot.exists()) {
             const data = snapshot.data();
@@ -541,7 +543,6 @@
         });
     }
 
-    // إعادة الضبط للترتيب الأصلي بالسحابة
     async function resetOrderCloud() {
         try {
             await deleteDoc(doc(db, "portal_config", "cards_order"));
