@@ -36,75 +36,33 @@
             transition: var(--transition);
         }
 
-        .theme-toggle {
-            position: fixed; top: 20px; left: 20px;
+        /* أزرار التحكم العلوية ثابتة */
+        .top-controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .icon-btn {
             width: 50px; height: 50px; border-radius: 14px;
             background: var(--primary-glow); color: white;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 1000; border: none;
+            cursor: pointer; border: none;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             font-size: 1.2rem;
+            transition: var(--transition);
         }
 
-        header { text-align: center; padding: 50px 20px 20px; }
+        .icon-btn:active {
+            transform: scale(0.92);
+        }
+
+        header { text-align: center; padding: 60px 20px 30px; }
         header h1 { font-size: 2.3rem; font-weight: 900; color: var(--header-text); margin-bottom: 10px; }
         header p { color: var(--primary-glow); font-size: 1.1rem; }
-
-        .controls-bar {
-            max-width: 1400px;
-            margin: 0 auto 25px;
-            padding: 0 20px;
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .btn-action {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            padding: 12px 20px;
-            border-radius: 14px;
-            cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: 700;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: var(--transition);
-            backdrop-filter: blur(10px);
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .btn-action:active {
-            transform: scale(0.96);
-        }
-
-        .btn-apply {
-            background: #6366f1;
-            color: white;
-            border: none;
-        }
-
-        .btn-save {
-            background: var(--primary-glow);
-            color: #050810;
-            border: none;
-        }
-
-        .btn-save.unsaved {
-            background: #f97316 !important;
-            color: white;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
-            70% { box-shadow: 0 0 0 12px rgba(249, 115, 22, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
-        }
 
         .container {
             max-width: 1400px; margin: 0 auto;
@@ -118,50 +76,12 @@
             text-decoration: none; transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
             backdrop-filter: blur(10px); display: flex; flex-direction: column;
             position: relative;
-            user-select: none;
         }
 
         .card:hover {
             transform: translateY(-5px);
             border-color: var(--primary-glow);
-        }
-
-        /* مربع إدخال رقم الترتيب */
-        .order-box {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 4px 8px;
-            border-radius: 10px;
-            border: 1px solid var(--card-border);
-            z-index: 5;
-        }
-
-        .order-box span {
-            font-size: 0.75rem;
-            color: var(--text-sub);
-        }
-
-        .order-input {
-            width: 45px;
-            height: 32px;
-            background: var(--bg-color);
-            border: 1px solid var(--primary-glow);
-            color: var(--text-main);
-            border-radius: 8px;
-            text-align: center;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: bold;
-            font-size: 0.95rem;
-            outline: none;
-        }
-
-        .order-input:focus {
-            box-shadow: 0 0 8px var(--primary-glow);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
 
         .icon-box {
@@ -193,61 +113,105 @@
         .card h3 { font-size: 1.25rem; color: var(--text-main); margin-bottom: 8px; pointer-events: none; }
         .card p { font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; margin: 0; pointer-events: none; }
 
+        /* نافذة الإعدادات المنبثقة */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center;
+            z-index: 2000; padding: 20px; box-sizing: border-box;
+        }
+
+        .modal-content {
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            width: 100%; max-width: 600px; max-height: 85vh;
+            display: flex; flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--card-border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .modal-header h2 { margin: 0; font-size: 1.4rem; color: var(--text-main); }
+        .close-btn { background: none; border: none; color: var(--text-sub); font-size: 1.5rem; cursor: pointer; }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+
+        .order-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            padding: 12px 16px; border-radius: 12px;
+        }
+
+        .order-item-title { font-weight: 700; color: var(--text-main); font-size: 1rem; }
+
+        .order-input {
+            width: 55px; height: 38px;
+            background: var(--bg-color); border: 1px solid var(--primary-glow);
+            color: var(--text-main); border-radius: 8px; text-align: center;
+            font-family: 'Tajawal', sans-serif; font-weight: bold; font-size: 1rem;
+            outline: none;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--card-border);
+            display: flex; gap: 10px; justify-content: flex-end;
+        }
+
+        .btn-action {
+            padding: 12px 20px; border-radius: 12px; border: none;
+            font-family: 'Tajawal', sans-serif; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; font-size: 0.95rem;
+        }
+
+        .btn-save { background: var(--primary-glow); color: #050810; }
+        .btn-reset { background: rgba(255, 255, 255, 0.1); color: var(--text-main); }
+
         footer { text-align: center; padding: 30px; color: var(--text-sub); border-top: 1px solid var(--card-border); }
 
         .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #10b981;
-            color: white;
-            padding: 14px 28px;
-            border-radius: 14px;
-            font-weight: bold;
+            position: fixed; bottom: 30px; right: 30px;
+            background: #10b981; color: white; padding: 14px 28px;
+            border-radius: 14px; font-weight: bold;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: var(--transition);
-            z-index: 2000;
+            opacity: 0; transform: translateY(20px); transition: var(--transition);
+            z-index: 3000;
         }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .toast.show { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body data-theme="dark">
 
-<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
-    <i class="fas fa-sun"></i>
-</button>
+<div class="top-controls">
+    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="الوضع الليلي/النهاري">
+        <i class="fas fa-sun"></i>
+    </button>
+    <button class="icon-btn" onclick="openSettings()" title="ترتيب المواقع والإعدادات">
+        <i class="fas fa-cog"></i>
+    </button>
+</div>
 
 <header>
     <h1>بوابة عبد العزيز الفيفي الرقمية</h1>
     <p>حلول تعليمية • تقنيات ذكية • خدمات رقمية</p>
 </header>
 
-<div class="controls-bar">
-    <button class="btn-action btn-apply" id="applyBtn">
-        <i class="fas fa-arrow-down-1-9"></i> تطبيق الترتيب الجديد
-    </button>
-    <button class="btn-action btn-save" id="saveBtn">
-        <i class="fas fa-cloud-upload-alt"></i> حفظ الترتيب في السحابة
-    </button>
-    <button class="btn-action" id="resetBtn">
-        <i class="fas fa-rotate-right"></i> إعادة الضبط
-    </button>
-</div>
-
 <div class="container" id="cardsContainer">
 
     <!-- 1. منصة القدرات -->
     <a href="https://aztlaztl1512-bit.github.io/MAHME-/" class="card" target="_blank" data-id="1">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="1" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c1"><i class="fas fa-graduation-cap"></i></div>
         <h3>محاكي القدرات (1)</h3>
         <p>التدريب الذكي والمحاكي الأدق لاختبارات القدرات.</p>
@@ -255,10 +219,6 @@
 
     <!-- 2. إذاعة القرآن -->
     <a href="https://school1school2-stack.github.io/quran-radio/" class="card" target="_blank" data-id="2">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="2" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c2"><i class="fas fa-mosque"></i></div>
         <h3>إذاعة القرآن الكريم</h3>
         <p>بث مباشر وتلاوات عطرة بأصوات أشهر القراء.</p>
@@ -266,10 +226,6 @@
 
     <!-- 3. اختصار الروابط -->
     <a href="https://abonaoaf.github.io/N/" class="card" target="_blank" data-id="3">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="3" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c3"><i class="fas fa-link"></i></div>
         <h3>اختصار الروابط</h3>
         <p>أداة احترافية لتحويل الروابط الطويلة إلى ذكية.</p>
@@ -277,10 +233,6 @@
 
     <!-- 4. محول التاريخ -->
     <a href="https://school1school2-stack.github.io/Lk/" class="card" target="_blank" data-id="4">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="4" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c4"><i class="fas fa-calendar-alt"></i></div>
         <h3>محول التاريخ</h3>
         <p>تحويل فوري ودقيق بين الهجري والميلادي.</p>
@@ -288,10 +240,6 @@
 
     <!-- 5. القدرات اللفظي مانيوس -->
     <a href="https://verbaltest-epazvzu9.manus.space/" class="card" target="_blank" data-id="5">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="5" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c5"><i class="fas fa-brain"></i></div>
         <h3>القدرات اللفظي (M)</h3>
         <p>منصة متطورة لاختبارات القسم اللفظي التفاعلية.</p>
@@ -299,10 +247,6 @@
 
     <!-- 6. فولتشر -->
     <a href="https://abonaoaf.github.io/An/" class="card" target="_blank" data-id="6">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="6" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c6"><i class="fas fa-v"></i></div>
         <h3>فولتشر Vulture</h3>
         <p>بوابة الخدمات الرقمية والاشتراكات المتنوعة.</p>
@@ -310,10 +254,6 @@
 
     <!-- 7. نموذج كتابة الأسئلة -->
     <a href="https://school1school2-stack.github.io/QQQ3/" class="card" target="_blank" data-id="7">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="7" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c7"><i class="fas fa-pen-fancy"></i></div>
         <h3>نموذج الأسئلة</h3>
         <p>نظام ذكي لتوليد وتنظيم أسئلة القدرات.</p>
@@ -321,10 +261,6 @@
 
     <!-- 8. الكفايات اللغوية -->
     <a href="https://school1school2-stack.github.io/Abd-mdara/" class="card" target="_blank" data-id="8">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="8" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c8"><i class="fas fa-book-open"></i></div>
         <h3>الكفايات اللغوية</h3>
         <p>تعزيز المهارات اللغوية والتدريب على المعايير.</p>
@@ -332,10 +268,6 @@
 
     <!-- 9. ميزان المصروفات -->
     <a href="https://school1school2-stack.github.io/Ratbe/" class="card" target="_blank" data-id="9">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="9" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c9"><i class="fas fa-wallet"></i></div>
         <h3>ميزان المصروفات</h3>
         <p>أداتك الذكية لضبط الميزانية وتتبع المصاريف.</p>
@@ -343,10 +275,6 @@
 
     <!-- 10. محراب الذكر -->
     <a href="https://aztlaztl1512-bit.github.io/ABO-NAOAF/" class="card" target="_blank" data-id="10">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="10" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c10"><i class="fas fa-heart"></i></div>
         <h3>محراب الذكر</h3>
         <p>واحة إيمانية للأذكار والأوراد اليومية.</p>
@@ -354,10 +282,6 @@
 
     <!-- 11. تحليل النتائج 1 -->
     <a href="https://school1school2-stack.github.io/Vvvadmin/" class="card" target="_blank" data-id="11">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="11" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c11"><i class="fas fa-chart-line"></i></div>
         <h3>تحليل النتائج (1)</h3>
         <p>لوحة تحكم ذكية لتحليل أداء الطلاب.</p>
@@ -365,10 +289,6 @@
 
     <!-- 12. منصة الجمهور -->
     <a href="https://school1school2-stack.github.io/ABO-NAOAF/" class="card" target="_blank" data-id="12">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="12" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c12"><i class="fas fa-users"></i></div>
         <h3>منصة الجمهور</h3>
         <p>بوابتي الرئيسية للتواصل والتفاعل العام.</p>
@@ -376,10 +296,6 @@
 
     <!-- 13. تحليل النتائج 2 -->
     <a href="https://school1school2-stack.github.io/AAAadmin/" class="card" target="_blank" data-id="13">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="13" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c13"><i class="fas fa-database"></i></div>
         <h3>تحليل النتائج (2)</h3>
         <p>نظام إحصائي متطور لرصد ومتابعة البيانات.</p>
@@ -387,10 +303,6 @@
 
     <!-- 14. أسماء الطلاب المعتمدة -->
     <a href="https://aztlaztl1512-bit.github.io/ZBID/" class="card" target="_blank" data-id="14">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="14" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c14"><i class="fas fa-id-card"></i></div>
         <h3>أسماء الطلاب</h3>
         <p>السجلات المعتمدة وقوائم الطلاب المسجلين.</p>
@@ -398,10 +310,6 @@
     
     <!-- 15. سبورة نواف للحروف والكلمات -->
     <a href="https://abonaoaf.github.io/NAOAF/" class="card" target="_blank" data-id="15">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="15" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c16"><i class="fas fa-chalkboard"></i></div>
         <h3>سبورة نواف</h3>
         <p>منصة تعليمية تفاعلية لتعلم الحروف والكلمات بطريقة ممتعة.</p>
@@ -409,10 +317,6 @@
 
     <!-- 16. تحليل نتائج الكفايات اللغوية -->
     <a href="https://school1school2-stack.github.io/ALkfaeat-1/" class="card" target="_blank" data-id="16">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="16" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c11"><i class="fas fa-chart-pie"></i></div>
         <h3>تحليل نتائج الكفايات</h3>
         <p>لوحة تحكم ذكية لرصد وتحليل أداء طلاب الكفايات اللغوية.</p>
@@ -420,10 +324,6 @@
 
     <!-- 17. منصة الكفايات اللغوية -->
     <a href="https://school1school2-stack.github.io/kifayat-language/" class="card" target="_blank" data-id="17">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="17" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c12"><i class="fas fa-language"></i></div>
         <h3>منصة الكفايات اللغوية</h3>
         <p>مرجع التدريبات والتطبيقات التفاعلية اللغوية.</p>
@@ -431,10 +331,6 @@
 
     <!-- 18. أسماء الطلاب (ثانوية الأمير عبدالمجيد) -->
     <a href="https://aztlaztl1512-bit.github.io/ZBID1/" class="card" target="_blank" data-id="18">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="18" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c14"><i class="fas fa-address-book"></i></div>
         <h3>أسماء طلاب الكفايات</h3>
         <p>السجلات المعتمدة لطلاب ثانوية الأمير عبدالمجيد.</p>
@@ -442,10 +338,6 @@
 
     <!-- 19. تصحيح إلكتروني -->
     <a href="https://school1school2-stack.github.io/TTT/" class="card" target="_blank" data-id="19">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="19" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c15"><i class="fas fa-file-signature"></i></div>
         <h3>تصحيح إلكتروني</h3>
         <p>نظام ذكي ومتقدم لتصحيح الاختبارات وتقييم الإجابات.</p>
@@ -453,10 +345,6 @@
 
     <!-- 20. بوابة الطالب -->
     <a href="https://school1school2-stack.github.io/student-portal./" class="card" target="_blank" data-id="20">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="20" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c1"><i class="fas fa-user-graduate"></i></div>
         <h3>بوابة الطالب</h3>
         <p>استعراض النتائج والتحقق من الاختبارات والتقييمات بسهولة.</p>
@@ -464,10 +352,6 @@
 
     <!-- 21. كشف متابعة الطلاب -->
     <a href="https://school1school2-stack.github.io/Abdul-Majeed1/" class="card" target="_blank" data-id="21">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="21" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c2"><i class="fas fa-clipboard-check"></i></div>
         <h3>كشف متابعة الطلاب</h3>
         <p>متابعة مستويات الطلاب ورصد تقدمهم الأكاديمي بشكل دقيق.</p>
@@ -475,10 +359,6 @@
 
     <!-- 22. منصة المعلمين -->
     <a href="https://school1school2-stack.github.io/Abdul-Majeed/" class="card" target="_blank" data-id="22">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="22" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c3"><i class="fas fa-chalkboard-user"></i></div>
         <h3>منصة المعلمين</h3>
         <p>بوابة الخدمات والأدوات التعليمية المخصصة للمعلمين.</p>
@@ -486,10 +366,6 @@
 
     <!-- 23. منصة المعلمين - متابعة السلوكيات والإيجابيات -->
     <a href="https://school1school2-stack.github.io/Abdul-majeed2/" class="card" target="_blank" data-id="23">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="23" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c17"><i class="fas fa-user-check"></i></div>
         <h3>متابعة السلوكيات والإيجابيات</h3>
         <p>منصة المعلمين لكشوف متابعة السلوكيات والإيجابيات الطلابية بأسلوب ذكي.</p>
@@ -497,10 +373,6 @@
 
     <!-- 24. كشكول القدرات -->
     <a href="https://school1school2-stack.github.io/Qodrat/" class="card" target="_blank" data-id="24">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="24" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c8"><i class="fas fa-book-bookmark"></i></div>
         <h3>كشكول القدرات</h3>
         <p>منصة تجميعات وملاحظات شاملة لاختبارات القدرات العامة.</p>
@@ -508,10 +380,6 @@
 
     <!-- 25. كشف الحضور والسلوك اليومي -->
     <a href="https://school1school2-stack.github.io/2222/" class="card" target="_blank" data-id="25">
-        <div class="order-box">
-            <span>ترتيب:</span>
-            <input type="number" class="order-input" value="25" onclick="event.stopPropagation();" onchange="markUnsaved();">
-        </div>
         <div class="icon-box c10"><i class="fas fa-user-clock"></i></div>
         <h3>كشف الحضور والسلوك اليومي</h3>
         <p>نظام يومي لتسجيل ومتابعة حضور وغياب وسلوكيات الطلاب.</p>
@@ -519,13 +387,30 @@
 
 </div>
 
-<div class="toast" id="toast">تم حفظ الترتيب الجديد في السحابة بنجاح!</div>
+<!-- نافذة إعدادات الترتيب المنبثقة -->
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>⚙️ إعدادات ترتيب المواقع</h2>
+            <button class="close-btn" onclick="closeSettings()">&times;</button>
+        </div>
+        <div class="modal-body" id="settingsList">
+            <!-- يتم توليد القائمة هنا تلقائياً -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn-action btn-reset" id="resetBtn">إعادة الضبط</button>
+            <button class="btn-action btn-save" id="saveBtn"><i class="fas fa-cloud-upload-alt"></i> حفظ في السحابة</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast">تم حفظ الترتيب الجديد بالسحابة!</div>
 
 <footer>
     تم التصميم بواسطة عبد العزيز الفيفي &copy; 2026
 </footer>
 
-<!-- برمجية ربط السحابة والترقيم (Firebase) -->
+<!-- برمجية الربط بالسحابة وإدارة الترتيب -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -544,7 +429,8 @@
     const db = getFirestore(app);
 
     const container = document.getElementById('cardsContainer');
-    const applyBtn = document.getElementById('applyBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const settingsList = document.getElementById('settingsList');
     const saveBtn = document.getElementById('saveBtn');
     const resetBtn = document.getElementById('resetBtn');
     const themeBtn = document.getElementById('themeBtn');
@@ -566,65 +452,75 @@
         }
     }
 
-    window.markUnsaved = function() {
-        saveBtn.classList.add('unsaved');
-        saveBtn.innerHTML = '<i class="fas fa-exclamation-circle"></i> حفظ الترتيب بالسحابة';
+    // فتح نافذة الترتيب وبناء القائمة
+    window.openSettings = function() {
+        settingsList.innerHTML = '';
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            const title = card.querySelector('h3').textContent;
+            const id = card.getAttribute('data-id');
+
+            const item = document.createElement('div');
+            item.className = 'order-item';
+            item.innerHTML = `
+                <span class="order-item-title">${title}</span>
+                <input type="number" class="order-input" data-id="${id}" value="${index + 1}" min="1">
+            `;
+            settingsList.appendChild(item);
+        });
+        settingsModal.style.display = 'flex';
     }
 
-    // إعادة ترتيب العناصر وفق أرقام المدخلات
-    function applyNewOrder() {
-        const cards = Array.from(document.querySelectorAll('.card'));
+    window.closeSettings = function() {
+        settingsModal.style.display = 'none';
+    }
+
+    // حفظ الترتيب الجديد بالسحابة
+    async function saveSettings() {
+        const inputs = Array.from(document.querySelectorAll('.order-input'));
         
-        cards.sort((a, b) => {
-            const valA = parseInt(a.querySelector('.order-input').value) || 999;
-            const valB = parseInt(b.querySelector('.order-input').value) || 999;
+        // ترتيب العناصر حسب الرقم المكتوب
+        inputs.sort((a, b) => {
+            const valA = parseInt(a.value) || 999;
+            const valB = parseInt(b.value) || 999;
             return valA - valB;
         });
 
-        // إعادة تنظيم العناصر في الواجهة وتحديث أرقام الترتيب
-        cards.forEach((card, index) => {
-            container.appendChild(card);
-            card.querySelector('.order-input').value = index + 1;
-        });
-
-        showToast('تم تطبيق الترتيب الجديد!');
-        markUnsaved();
-    }
-
-    // حفظ الترتيب في السحابة
-    async function saveOrderToCloud() {
-        // التأكد أولاً من تطبيق أحدث ترقيم مدخل
-        applyNewOrder();
-
-        const currentCards = document.querySelectorAll('.card');
-        const orderArray = [];
-        currentCards.forEach(card => {
-            orderArray.push(card.getAttribute('data-id'));
-        });
+        const newOrder = inputs.map(input => input.getAttribute('data-id'));
 
         try {
             saveBtn.disabled = true;
             await setDoc(doc(db, "portal_config", "cards_order"), {
-                order: orderArray,
+                order: newOrder,
                 updatedAt: new Date().toISOString()
             });
 
-            saveBtn.classList.remove('unsaved');
-            saveBtn.innerHTML = '<i class="fas fa-check"></i> تم الحفظ بالسحابة';
-            setTimeout(() => {
-                saveBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> حفظ الترتيب في السحابة';
-            }, 2000);
-
+            applyOrder(newOrder);
+            closeSettings();
             showToast('تم حفظ الترتيب بالسحابة بنجاح!');
         } catch (error) {
             console.error("خطأ أثناء الحفظ بالسحابة:", error);
-            showToast('حدث خطأ أثناء الحفظ بالسحابة');
+            showToast('حدث خطأ أثناء الحفظ');
         } finally {
             saveBtn.disabled = false;
         }
     }
 
-    // الاستماع للترتيب المباشر من السحابة
+    // تطبيق الترتيب بصفحة البوابة
+    function applyOrder(orderArray) {
+        const cardMap = {};
+        document.querySelectorAll('.card').forEach(card => {
+            cardMap[card.getAttribute('data-id')] = card;
+        });
+
+        orderArray.forEach(id => {
+            if (cardMap[id]) {
+                container.appendChild(cardMap[id]);
+            }
+        });
+    }
+
+    // مزامنة الترتيب المباشرة من Firebase
     onSnapshot(doc(db, "portal_config", "cards_order"), (snapshot) => {
         if (snapshot.exists()) {
             const data = snapshot.data();
@@ -634,27 +530,11 @@
         }
     });
 
-    function applyOrder(orderArray) {
-        const cardMap = {};
-        document.querySelectorAll('.card').forEach(card => {
-            cardMap[card.getAttribute('data-id')] = card;
-        });
-
-        orderArray.forEach((id, index) => {
-            if (cardMap[id]) {
-                container.appendChild(cardMap[id]);
-                cardMap[id].querySelector('.order-input').value = index + 1;
-            }
-        });
-    }
-
     async function resetOrderCloud() {
         try {
             await deleteDoc(doc(db, "portal_config", "cards_order"));
             applyOrder(originalOrder);
-
-            saveBtn.classList.remove('unsaved');
-            saveBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> حفظ الترتيب في السحابة';
+            closeSettings();
             showToast('تمت إعادة الضبط للترتيب الأصلي');
         } catch (error) {
             console.error("خطأ أثناء إعادة الضبط:", error);
@@ -670,8 +550,7 @@
         }, 2500);
     }
 
-    applyBtn.addEventListener('click', applyNewOrder);
-    saveBtn.addEventListener('click', saveOrderToCloud);
+    saveBtn.addEventListener('click', saveSettings);
     resetBtn.addEventListener('click', resetOrderCloud);
 </script>
 
